@@ -4,103 +4,508 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#0b1120" />
-  <meta name="description" content="CubeLab — your private 3×3, 4×4 and 5×5 speedcubing timer and training tracker." />
-  <title>CubeLab — Speedcubing Training</title>
+  <meta name="description" content="CubeLab v4 — Intelligent Speedcubing Analytics, Stage Splits, Explainable Coaching, and Personalized Training." />
+  <title>CubeLab v4 — Speedcubing Training & Analytics</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app-shell">
     <aside class="sidebar">
-      <div class="brand"><span class="brand-icon">▦</span><span>CUBE<span class="brand-accent">LAB</span><small>TRAINING STUDIO</small></span></div>
+      <div class="brand"><span class="brand-icon">▦</span><span>CUBE<span class="brand-accent">LAB</span><small>ANALYTICS &amp; COACH</small></span></div>
+      
       <div class="nav-label">EVENTS</div>
       <div class="events" role="group" aria-label="Select event">
         <button class="event-btn active" data-event="3x3"><span class="cube-mini green">3</span><span>3×3×3</span><span class="event-target">&lt; 8s</span></button>
         <button class="event-btn" data-event="4x4"><span class="cube-mini blue">4</span><span>4×4×4</span><span class="event-target">&lt; 30s</span></button>
         <button class="event-btn" data-event="5x5"><span class="cube-mini amber">5</span><span>5×5×5</span><span class="event-target">&lt; 60s</span></button>
       </div>
+
       <div class="sidebar-divider"></div>
-      <div class="nav-label">TRAINING</div>
-      <div class="training-plan">
-        <div class="tiny-heading"><span class="pulsing-dot"></span> 2-HOUR DAILY PLAN</div>
-        <div class="plan-line"><span>3×3 · CFOP</span><strong>35 min</strong></div>
-        <div class="mini-bar"><i style="width:29.17%;background:#36c6a7"></i></div>
-        <div class="plan-line"><span>4×4 · Yau</span><strong>35 min</strong></div>
-        <div class="mini-bar"><i style="width:29.17%;background:#6792ff"></i></div>
-        <div class="plan-line"><span>5×5 · Yau</span><strong>45 min</strong></div>
-        <div class="mini-bar"><i style="width:37.5%;background:#e5b76c"></i></div>
-        <div class="plan-line"><span>Review</span><strong>5 min</strong></div>
-        <div class="mini-bar"><i style="width:4.17%;background:#9aa6bb"></i></div>
+
+      <div class="nav-label">MODULES</div>
+      <nav class="view-nav" aria-label="Main Navigation">
+        <button class="nav-btn active" data-view="timer"><span class="nav-icon">⏱</span> Session Timer</button>
+        <button class="nav-btn" data-view="analytics"><span class="nav-icon">📊</span> Deep Analytics</button>
+        <button class="nav-btn" data-view="splits"><span class="nav-icon">🧩</span> Stage Splits</button>
+        <button class="nav-btn" data-view="coach"><span class="nav-icon">🧭</span> CubeLab Coach</button>
+        <button class="nav-btn" data-view="planner"><span class="nav-icon">📅</span> 2-Hour Planner</button>
+        <button class="nav-btn" data-view="forecast"><span class="nav-icon">🎯</span> Goals &amp; Forecast</button>
+      </nav>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="nav-label">DAILY PLAN (120 MIN)</div>
+      <div class="training-plan" id="sidebar-plan-summary">
+        <div class="plan-line"><span>3×3 CFOP</span><strong id="side-plan-3x3">35m</strong></div>
+        <div class="mini-bar"><i id="side-bar-3x3" style="width:29.17%;background:#36c6a7"></i></div>
+        <div class="plan-line"><span>4×4 Yau</span><strong id="side-plan-4x4">35m</strong></div>
+        <div class="mini-bar"><i id="side-bar-4x4" style="width:29.17%;background:#6792ff"></i></div>
+        <div class="plan-line"><span>5×5 Yau</span><strong id="side-plan-5x5">45m</strong></div>
+        <div class="mini-bar"><i id="side-bar-5x5" style="width:37.5%;background:#e5b76c"></i></div>
+        <div class="plan-line"><span>Review</span><strong id="side-plan-review">5m</strong></div>
+        <div class="mini-bar"><i id="side-bar-review" style="width:4.17%;background:#9aa6bb"></i></div>
       </div>
+
       <div class="sidebar-bottom">
-        <div class="privacy"><span class="privacy-dot"></span> Local-first · Private by default</div>
-        <div class="tiny-muted">Your solves live in this browser until you export them. Back up regularly.</div>
+        <div class="privacy"><span class="privacy-dot"></span> 100% Browser-Local · Private</div>
+        <div class="tiny-muted">Zero tracking, zero cloud databases, and zero live AI calls. Back up data regularly.</div>
       </div>
     </aside>
+
     <main class="main">
       <header class="topbar">
-        <div><span class="eyebrow">2027 COMPETITION PREP</span><h1>Training dashboard<span class="heading-period">.</span></h1><p id="subtitle">3×3 · Building consistency toward sub-8</p></div>
-        <div class="date-box"><div class="countdown" id="days-left">—</div><div class="date-description">DAYS TO<br><strong id="competition-date-label">JAN 16, 2027</strong></div></div>
+        <div>
+          <span class="eyebrow" id="topbar-eyebrow">2027 COMPETITION PREP</span>
+          <h1 id="view-title">Session timer<span class="heading-period">.</span></h1>
+          <p id="subtitle">3×3 · CFOP · Sub-8.00 Ao5</p>
+        </div>
+        <div class="date-box">
+          <div class="countdown" id="days-left">—</div>
+          <div class="date-description">DAYS TO<br><strong id="competition-date-label">JAN 16, 2027</strong></div>
+        </div>
       </header>
-      <section class="content-grid">
-        <section class="timer-panel panel">
-          <div class="panel-heading"><h2>Session timer</h2><span class="tag" id="event-tag">3×3×3</span></div>
-          <div class="mode-switch" role="group" aria-label="Timing input mode">
-            <button id="manual-tab" class="mode-btn active" aria-pressed="true">✎ &nbsp;Manual entry</button>
-            <button id="keyboard-tab" class="mode-btn" aria-pressed="false">⌨ &nbsp;Keyboard timer</button>
-          </div>
-          <div class="timer-stage" id="timer-stage">
-            <div class="timer-status"><span class="status-dot"></span><span id="timer-instruction">ENTER A TIME FROM YOUR QIYI TIMER</span></div>
-            <div class="timer-readout" id="readout" aria-live="off">0.00</div>
-            <p class="timer-hint" id="timer-hint">Solve using your physical timer, then record the displayed result below.</p>
-          </div>
-          <form id="manual-form" class="manual-form">
-            <label for="time-input">Solve time</label>
-            <div class="input-group"><input id="time-input" placeholder="12.34 or 1:23.45" autocomplete="off" inputmode="decimal" aria-label="Solve time" required/><button type="submit" class="primary-btn">Save solve <span>↗</span></button></div>
-            <div class="manual-meta"><label>Penalty <select id="manual-penalty"><option value="none">None</option><option value="+2">+2 seconds</option><option value="DNF">DNF</option></select></label><label class="notes-label">Notes (optional)<input id="solve-note" placeholder="e.g. F2L pause, good edges" maxlength="180"/></label></div>
-          </form>
-          <div id="keyboard-controls" class="keyboard-controls hidden"><button id="touch-timer-btn" class="primary-btn large">Hold to start / tap to stop</button><div class="key-help">Hold <kbd>SPACE</kbd> and release to start. Press <kbd>SPACE</kbd> to stop. <kbd>ESC</kbd> cancels.<br/>The time is saved automatically after you stop.</div></div>
-          <div class="scramble-section"><div class="scramble-title"><span>Practice scramble</span><button id="new-scramble" class="text-button">↻ &nbsp;New scramble</button></div><div id="scramble-text" class="scramble-text"></div>
-            <div class="cube-net-box" aria-label="2D unfolded cube showing the current scramble">
-              <div class="cube-net-heading"><span>Scrambled cube · 2D net</span><span id="net-size">3×3</span></div>
-              <div class="cube-net-scroll"><div id="cube-net" class="cube-net" role="img" aria-label="Scrambled cube faces"></div></div>
+
+      <!-- ================= VIEW 1: TIMER ================= -->
+      <section id="view-timer" class="view-panel active">
+        <section class="content-grid">
+          <section class="timer-panel panel">
+            <div class="panel-heading">
+              <h2>Session timer</h2>
+              <div class="timer-tag-group">
+                <select id="session-tag-select" class="session-tag-select" aria-label="Session type">
+                  <option value="full">Full Solve</option>
+                  <option value="drill">Practice Drill</option>
+                  <option value="competition">Comp Simulation</option>
+                </select>
+                <span class="tag" id="event-tag">3×3×3</span>
+              </div>
             </div>
-            <p class="small-disclaimer">Cube diagram follows the scramble exactly (white up, green front). Scrambles are random-move practice sequences, not official WCA random-state scrambles.</p></div>
+
+            <div class="mode-switch" role="group" aria-label="Timing input mode">
+              <button id="manual-tab" class="mode-btn active" aria-pressed="true">✎ &nbsp;Manual entry</button>
+              <button id="keyboard-tab" class="mode-btn" aria-pressed="false">⌨ &nbsp;Keyboard timer</button>
+            </div>
+
+            <div class="timer-stage" id="timer-stage">
+              <div class="timer-status"><span class="status-dot"></span><span id="timer-instruction">ENTER A TIME FROM YOUR QIYI TIMER</span></div>
+              <div class="timer-readout" id="readout" aria-live="off">0.00</div>
+              <p class="timer-hint" id="timer-hint">Solve using your physical timer, then record the displayed result below.</p>
+            </div>
+
+            <form id="manual-form" class="manual-form">
+              <label for="time-input">Solve time</label>
+              <div class="input-group">
+                <input id="time-input" placeholder="12.34 or 1:23.45" autocomplete="off" inputmode="decimal" aria-label="Solve time" required/>
+                <button type="submit" class="primary-btn">Save solve <span>↗</span></button>
+              </div>
+
+              <div class="manual-meta">
+                <label>Penalty
+                  <select id="manual-penalty">
+                    <option value="none">None</option>
+                    <option value="+2">+2 seconds</option>
+                    <option value="DNF">DNF</option>
+                  </select>
+                </label>
+                <label class="notes-label">Notes (optional)
+                  <input id="solve-note" placeholder="e.g. F2L pause, good cross-pair" maxlength="180"/>
+                </label>
+              </div>
+
+              <!-- Optional Stage Splits Expander -->
+              <div class="splits-entry-box">
+                <button type="button" id="toggle-splits-entry" class="text-button toggle-splits-btn">
+                  <span>+</span> Add optional stage splits
+                </button>
+                <div id="splits-inputs-container" class="splits-inputs-container hidden">
+                  <div class="splits-inputs-header">
+                    <span>Enter stage durations (seconds)</span>
+                    <span id="splits-sum-indicator" class="splits-sum-indicator">Sum: 0.00s</span>
+                  </div>
+                  <div id="splits-fields-grid" class="splits-fields-grid"></div>
+                </div>
+              </div>
+            </form>
+
+            <div id="keyboard-controls" class="keyboard-controls hidden">
+              <button id="touch-timer-btn" class="primary-btn large">Hold to start / tap to stop</button>
+              <div class="key-help">Hold <kbd>SPACE</kbd> and release to start. Press <kbd>SPACE</kbd> to stop. <kbd>ESC</kbd> cancels.<br/>The time is saved automatically after you stop.</div>
+            </div>
+
+            <div class="scramble-section">
+              <div class="scramble-title">
+                <span>Practice scramble</span>
+                <button id="new-scramble" class="text-button">↻ &nbsp;New scramble</button>
+              </div>
+              <div id="scramble-text" class="scramble-text"></div>
+              <div class="cube-net-box" aria-label="2D unfolded cube showing the current scramble">
+                <div class="cube-net-heading"><span>Scrambled cube · 2D net</span><span id="net-size">3×3</span></div>
+                <div class="cube-net-scroll"><div id="cube-net" class="cube-net" role="img" aria-label="Scrambled cube faces"></div></div>
+              </div>
+              <p class="small-disclaimer">Cube diagram simulates the exact scramble (white up, green front). Practice scrambles, not official WCA random-state scrambles.</p>
+            </div>
+          </section>
+
+          <section class="stats-col">
+            <div class="stat-pair">
+              <article class="panel stat-card">
+                <div class="stat-label">SESSION MEAN <span>◷</span></div>
+                <div class="stat-value" id="session-mean">—</div>
+                <div class="stat-foot" id="session-count">0 solves today</div>
+              </article>
+              <article class="panel stat-card">
+                <div class="stat-label">BEST SINGLE <span>✦</span></div>
+                <div class="stat-value" id="best-single">—</div>
+                <div class="stat-foot">All recorded solves</div>
+              </article>
+            </div>
+
+            <article class="panel averages-panel">
+              <div class="panel-heading"><h2>Rolling averages</h2><span class="muted-small">Latest</span></div>
+              <div class="average-row"><span>Ao5</span><strong id="ao5">—</strong><span class="best-pill" id="best-ao5">Best —</span></div>
+              <div class="average-row"><span>Ao12</span><strong id="ao12">—</strong><span class="best-pill" id="best-ao12">Best —</span></div>
+              <div class="average-row"><span>Ao50</span><strong id="ao50">—</strong><span class="best-pill" id="best-ao50">Best —</span></div>
+              <div class="average-row"><span>Ao100</span><strong id="ao100">—</strong><span class="best-pill" id="best-ao100">Best —</span></div>
+              <p class="small-disclaimer">WCA-style trimmed averages; +2 and DNF supported.</p>
+            </article>
+
+            <article class="panel target-panel">
+              <div class="target-header">
+                <span>COMPETITION GOAL</span>
+                <div class="target-head-actions">
+                  <strong id="target-label">SUB-8.00</strong>
+                  <button id="edit-goals-timer" class="text-button goal-edit-btn" type="button">⚙ Edit goals</button>
+                </div>
+              </div>
+              <div class="target-current" id="current-vs-target">Record five solves to compare your latest Ao5.</div>
+              <div class="goal-track" role="progressbar" aria-label="Competition goal pace ratio" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="goal-track">
+                <div class="goal-fill" id="goal-fill"></div>
+              </div>
+              <div class="target-footer">
+                <span id="current-label">Latest Ao5 / target pace</span>
+                <strong id="target-number">8.00s</strong>
+              </div>
+            </article>
+          </section>
         </section>
-        <section class="stats-col">
-          <div class="stat-pair"><article class="panel stat-card"><div class="stat-label">SESSION MEAN <span>◷</span></div><div class="stat-value" id="session-mean">—</div><div class="stat-foot" id="session-count">0 solves today</div></article><article class="panel stat-card"><div class="stat-label">BEST SINGLE <span>✦</span></div><div class="stat-value" id="best-single">—</div><div class="stat-foot">All recorded solves</div></article></div>
-          <article class="panel averages-panel"><div class="panel-heading"><h2>Rolling averages</h2><span class="muted-small">Latest</span></div><div class="average-row"><span>Ao5</span><strong id="ao5">—</strong><span class="best-pill" id="best-ao5">Best —</span></div><div class="average-row"><span>Ao12</span><strong id="ao12">—</strong><span class="best-pill" id="best-ao12">Best —</span></div><div class="average-row"><span>Ao50</span><strong id="ao50">—</strong><span class="best-pill" id="best-ao50">Best —</span></div><div class="average-row"><span>Ao100</span><strong id="ao100">—</strong><span class="best-pill" id="best-ao100">Best —</span></div><p class="small-disclaimer">WCA-style trimmed averages; +2 and DNF supported.</p></article>
-          <article class="panel target-panel">
-            <div class="target-header"><span>COMPETITION AVERAGE GOAL</span><div class="target-head-actions"><strong id="target-label">SUB-8.00</strong><button id="edit-goals" class="text-button goal-edit-btn" type="button">⚙ Edit goals</button></div></div>
-            <div class="target-current" id="current-vs-target">Record five solves to compare your latest Ao5.</div>
-            <div class="goal-track" role="progressbar" aria-label="Competition goal pace ratio" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="goal-track"><div class="goal-fill" id="goal-fill"></div></div>
-            <div class="target-footer"><span id="current-label">Latest Ao5 / target pace</span><strong id="target-number">8.00s</strong></div>
-            <div class="milestone-list">
-              <div class="milestone-heading">TRAINING ROADMAP <span id="goal-benchmark-name">Tracked with Ao50</span></div>
-              <div class="milestone-row"><span id="milestone-one">—</span><strong id="milestone-one-status">—</strong></div>
-              <div class="milestone-row"><span id="milestone-two">—</span><strong id="milestone-two-status">—</strong></div>
-              <div class="milestone-row stretch"><span id="stretch-goal">—</span><strong id="stretch-status">—</strong></div>
+
+        <!-- Solve History Table -->
+        <section class="bottom-grid">
+          <article class="panel history-panel" style="grid-column: 1 / -1;">
+            <div class="panel-heading">
+              <div>
+                <h2>Recent solve history</h2>
+                <p class="panel-subtitle">Newest first · click penalty button to cycle penalties</p>
+              </div>
+              <button id="clear-event" class="text-button muted-red">Clear event solves</button>
             </div>
+            <div class="history-table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Time</th>
+                    <th>Penalty</th>
+                    <th>Splits</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="history-body"></tbody>
+              </table>
+            </div>
+            <div class="table-footer" id="history-count">0 recorded solves</div>
           </article>
         </section>
       </section>
-      <section class="bottom-grid">
-        <article class="panel trend-panel"><div class="panel-heading"><div><h2>Performance trend</h2><p class="panel-subtitle">Most recent solves, ordered oldest to newest</p></div><span class="tag soft" id="chart-count">0 solves</span></div><div class="chart-wrap"><svg id="trend-chart" role="img" aria-label="Recent solve times" viewBox="0 0 600 210" preserveAspectRatio="none"></svg></div><div class="chart-legend"><span><i class="legend-dot green"></i> Solve time</span><span><i class="legend-dot gray"></i> Target</span></div></article>
-        <article class="panel history-panel"><div class="panel-heading"><div><h2>Solve history</h2><p class="panel-subtitle">Newest first · click penalty to change</p></div><button id="clear-event" class="text-button muted-red">Clear</button></div><div class="history-table-wrap"><table><thead><tr><th>#</th><th>Time</th><th>Penalty</th><th>Method</th><th></th></tr></thead><tbody id="history-body"></tbody></table></div><div class="table-footer" id="history-count">0 recorded solves</div></article>
+
+      <!-- ================= VIEW 2: ANALYTICS ================= -->
+      <section id="view-analytics" class="view-panel hidden">
+        <div class="stats-overview-grid">
+          <article class="panel stat-card">
+            <div class="stat-label">SAMPLE MEAN</div>
+            <div class="stat-value" id="stat-mean">—</div>
+            <div class="stat-foot" id="stat-valid-count">0 valid solves</div>
+          </article>
+          <article class="panel stat-card">
+            <div class="stat-label">MEDIAN (P50)</div>
+            <div class="stat-value" id="stat-median">—</div>
+            <div class="stat-foot">Robust midpoint</div>
+          </article>
+          <article class="panel stat-card">
+            <div class="stat-label">SAMPLE STD DEV (s)</div>
+            <div class="stat-value" id="stat-stddev">—</div>
+            <div class="stat-foot" id="stat-cv">CV: —</div>
+          </article>
+          <article class="panel stat-card">
+            <div class="stat-label">INTERQUARTILE RANGE</div>
+            <div class="stat-value" id="stat-iqr">—</div>
+            <div class="stat-foot" id="stat-iqr-span">P75 - P25</div>
+          </article>
+          <article class="panel stat-card">
+            <div class="stat-label">PENALTY RATES</div>
+            <div class="stat-value" id="stat-penalties">—</div>
+            <div class="stat-foot" id="stat-penalty-detail">0% +2 · 0% DNF</div>
+          </article>
+          <article class="panel stat-card">
+            <div class="stat-label">BEST / WORST</div>
+            <div class="stat-value" id="stat-range">—</div>
+            <div class="stat-foot" id="stat-range-detail">Single range</div>
+          </article>
+        </div>
+
+        <section class="panel chart-section-card">
+          <div class="panel-heading">
+            <div>
+              <h2>Solve time progression &amp; rolling Ao5</h2>
+              <p class="panel-subtitle">Green: individual solves · Blue dashed: rolling Ao5 · Gold: competition target</p>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <svg id="analytics-progression-chart" viewBox="0 0 650 240" preserveAspectRatio="none"></svg>
+          </div>
+        </section>
+
+        <section class="bottom-grid">
+          <article class="panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Solve-time distribution histogram</h2>
+                <p class="panel-subtitle">Binned frequency of solve durations with mean reference marker</p>
+              </div>
+            </div>
+            <div class="chart-wrap" style="height:200px;">
+              <svg id="analytics-histogram-chart" viewBox="0 0 650 200" preserveAspectRatio="none"></svg>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Solve-time percentiles</h2>
+                <p class="panel-subtitle">Distribution breakdown of valid solve times</p>
+              </div>
+            </div>
+            <div class="percentile-grid">
+              <div class="percentile-box"><span>P10 (Top 10%)</span><strong id="p-10">—</strong></div>
+              <div class="percentile-box"><span>P25 (Q1)</span><strong id="p-25">—</strong></div>
+              <div class="percentile-box"><span>P50 (Median)</span><strong id="p-50">—</strong></div>
+              <div class="percentile-box"><span>P75 (Q3)</span><strong id="p-75">—</strong></div>
+              <div class="percentile-box"><span>P90</span><strong id="p-90">—</strong></div>
+            </div>
+          </article>
+        </section>
+
+        <!-- Comparative Analytics Section -->
+        <section class="panel compare-section">
+          <div class="panel-heading">
+            <div>
+              <h2>Comparative analytics &amp; Welch's t-test</h2>
+              <p class="panel-subtitle">Test whether changes in solve time between sessions are statistically significant (α = 0.05)</p>
+            </div>
+            <select id="compare-preset-select" class="session-tag-select">
+              <option value="last25_vs_prior25">Last 25 vs Prior 25 Solves</option>
+              <option value="first50_vs_last50">First 50 vs Most Recent 50</option>
+              <option value="thisweek_vs_lastweek">Current Week vs Previous Week</option>
+            </select>
+          </div>
+          <div id="compare-results-box" class="compare-results-box">
+            <div class="compare-metrics-row">
+              <div class="cmp-card"><span>Baseline Sample</span><strong id="cmp-base-mean">—</strong><small id="cmp-base-meta">—</small></div>
+              <div class="cmp-card"><span>Comparison Sample</span><strong id="cmp-comp-mean">—</strong><small id="cmp-comp-meta">—</small></div>
+              <div class="cmp-card"><span>Difference (Δ)</span><strong id="cmp-delta">—</strong><small id="cmp-pct-delta">—</small></div>
+              <div class="cmp-card"><span>Welch t-stat / p-value</span><strong id="cmp-pvalue">—</strong><small id="cmp-df">—</small></div>
+            </div>
+            <div id="cmp-conclusion" class="cmp-conclusion">Select a comparison preset or record more solves to view statistical significance.</div>
+          </div>
+        </section>
       </section>
-      <section class="panel data-panel"><div><h2>Your data, your control</h2><p>Export JSON backups (including your custom goals) or CSV solves for analysis in ChatGPT. Imports merge by solve ID. No account or API key needed.</p><p class="small-disclaimer">GPT analysis is not connected automatically in this version; upload an exported file in ChatGPT.</p></div><div class="data-actions"><button id="export-csv" class="outline-btn">↓ Export CSV</button><button id="export-json" class="outline-btn">↓ Backup JSON</button><label class="outline-btn import-label">↑ Import JSON<input id="import-file" type="file" accept="application/json,.json" hidden/></label></div></section>
-      <footer>CubeLab v3.0 · Unofficial practice timer · All timings and averages are for training, not WCA certification.</footer>
+
+      <!-- ================= VIEW 3: STAGE SPLITS ================= -->
+      <section id="view-splits" class="view-panel hidden">
+        <div class="splits-dashboard-grid">
+          <section class="panel splits-overview-panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Stage distribution vs WCA benchmarks</h2>
+                <p class="panel-subtitle">Identifies disproportionate time allocation in CFOP and Yau solves</p>
+              </div>
+              <span id="splits-sample-pill" class="best-pill">0 timed split solves</span>
+            </div>
+
+            <div id="splits-breakdown-list" class="splits-breakdown-list">
+              <p class="tiny-muted" style="padding:15px;">No stage splits recorded yet. In the Timer tab, expand "Add optional stage splits" when saving a solve to populate stage diagnostics.</p>
+            </div>
+          </section>
+
+          <section class="panel bottleneck-panel">
+            <div class="panel-heading">
+              <h2>Diagnostic bottleneck detection</h2>
+            </div>
+            <div id="bottleneck-content" class="bottleneck-content">
+              <p class="tiny-muted">Record stage-split solves to diagnose whether Cross, F2L, Last Layer, or Big Cube Edge Pairing is your primary bottleneck.</p>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ================= VIEW 4: COACH ================= -->
+      <section id="view-coach" class="view-panel hidden">
+        <section class="panel coach-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>CubeLab Coach · Actionable training recommendations</h2>
+              <p class="panel-subtitle">Deterministic, evidence-grounded insights derived strictly from your measured solve statistics</p>
+            </div>
+            <span class="tag">Local Engine</span>
+          </div>
+
+          <div id="coach-recs-container" class="coach-recs-container">
+            <!-- Dynamic coaching cards -->
+          </div>
+        </section>
+
+        <!-- Weekly Performance Review -->
+        <section class="panel weekly-review-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Local weekly performance review</h2>
+              <p class="panel-subtitle">Automated comparison of the last 7 calendar days against the prior 7 days</p>
+            </div>
+            <span class="tag soft" id="weekly-review-event-tag">3×3×3</span>
+          </div>
+          <div id="weekly-review-narrative" class="weekly-review-narrative">
+            <p>Loading weekly performance report...</p>
+          </div>
+        </section>
+      </section>
+
+      <!-- ================= VIEW 5: 2-HOUR PLANNER ================= -->
+      <section id="view-planner" class="view-panel hidden">
+        <section class="panel planner-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Personalized 2-hour daily training schedule</h2>
+              <p class="panel-subtitle">Dynamic time distribution calibrated against your competition goals, consistency, and stage bottlenecks</p>
+            </div>
+            <div class="plan-actions">
+              <button id="btn-rebalance-plan" class="outline-btn" type="button">⚡ Dynamic rebalance</button>
+              <button id="btn-reset-plan" class="outline-btn" type="button">↺ Default (35/35/45/5)</button>
+            </div>
+          </div>
+
+          <div class="planner-schedule-grid" id="planner-schedule-grid">
+            <!-- Populated dynamically -->
+          </div>
+
+          <div class="drill-library-section">
+            <div class="panel-heading">
+              <h2>Recommended practice drills for today</h2>
+              <span class="muted-small">Targeted isolation</span>
+            </div>
+            <div id="planner-drills-container" class="planner-drills-container">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- ================= VIEW 6: GOALS & FORECAST ================= -->
+      <section id="view-forecast" class="view-panel hidden">
+        <section class="panel forecast-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Goal trajectory &amp; forecast modeling</h2>
+              <p class="panel-subtitle">Linear regression over rolling performance with standard error confidence intervals</p>
+            </div>
+            <button id="btn-open-goals-modal" class="primary-btn">⚙ Edit target times</button>
+          </div>
+
+          <div class="forecast-cards-grid">
+            <div class="stat-card panel">
+              <div class="stat-label">CURRENT ROLLING AO12</div>
+              <div class="stat-value" id="fc-current-ao">—</div>
+              <div class="stat-foot" id="fc-current-gap">Gap to goal: —</div>
+            </div>
+            <div class="stat-card panel">
+              <div class="stat-label">RECENT IMPROVEMENT RATE</div>
+              <div class="stat-value" id="fc-rate">—</div>
+              <div class="stat-foot" id="fc-required-rate">Required: —</div>
+            </div>
+            <div class="stat-card panel">
+              <div class="stat-label">PROJECTED ACHIEVEMENT DATE</div>
+              <div class="stat-value" id="fc-projected-date">—</div>
+              <div class="stat-foot" id="fc-confidence">Confidence interval: —</div>
+            </div>
+            <div class="stat-card panel">
+              <div class="stat-label">DAYS TO COMPETITION</div>
+              <div class="stat-value" id="fc-days-left">—</div>
+              <div class="stat-foot" id="fc-comp-date">Target: Jan 16, 2027</div>
+            </div>
+          </div>
+
+          <div class="forecast-narrative-box" id="forecast-narrative-box">
+            <div class="forecast-status-icon" id="forecast-status-icon">📈</div>
+            <div id="forecast-status-text">Record more solves to generate an inferential trajectory forecast.</div>
+          </div>
+        </section>
+      </section>
+
+      <!-- Backup / Export Data Panel (always accessible at bottom) -->
+      <section class="panel data-panel">
+        <div>
+          <h2>Your data, your control</h2>
+          <p>Export versioned JSON backups (includes solve histories, goals, stage splits, and daily training plans) or CSV for external analysis. All data remains 100% private to your browser.</p>
+          <p class="small-disclaimer">Zero telemetry or cloud tracking. No data is ever transmitted over the network.</p>
+        </div>
+        <div class="data-actions">
+          <button id="export-csv" class="outline-btn">↓ Export CSV</button>
+          <button id="export-json" class="outline-btn">↓ Backup JSON (v4)</button>
+          <label class="outline-btn import-label">↑ Import JSON<input id="import-file" type="file" accept="application/json,.json" hidden/></label>
+        </div>
+      </section>
+
+      <footer>CubeLab v4.0 · Intelligent Speedcubing Analytics &amp; Training · All metrics computed locally in browser.</footer>
     </main>
   </div>
+
+  <!-- Goals Customization Dialog -->
   <dialog id="goals-dialog" class="goals-dialog" aria-labelledby="goals-title">
     <form id="goals-form">
-      <div class="goals-dialog-head"><div><div class="eyebrow">TRAINING TARGETS</div><h2 id="goals-title">Customize your goals</h2><p>Use a starter template or edit every target. Saved only in this browser, alongside your solves.</p></div><button type="button" id="close-goals" class="dialog-close" aria-label="Close goal editor">×</button></div>
-      <div class="competition-setting"><label for="competition-date">Competition date</label><input id="competition-date" type="date" required /><span>Updates the dashboard countdown.</span></div>
+      <div class="goals-dialog-head">
+        <div>
+          <div class="eyebrow">TRAINING TARGETS</div>
+          <h2 id="goals-title">Customize competition goals</h2>
+          <p>Set targets for 3×3, 4×4, and 5×5. Stored exclusively in this browser.</p>
+        </div>
+        <button type="button" id="close-goals" class="dialog-close" aria-label="Close goal editor">×</button>
+      </div>
+      <div class="competition-setting">
+        <label for="competition-date">Competition date</label>
+        <input id="competition-date" type="date" required />
+        <span>Updates the countdown and goal forecast trajectories.</span>
+      </div>
       <div id="goal-editor-grid" class="goal-editor-grid"></div>
-      <p class="goal-help">Competition and stretch goals use the <strong>latest Ao5</strong> (WCA-style trimmed average). Training milestones use the selected rolling-average metric for each event. Times accept <strong>9.30</strong>, <strong>35.50</strong>, or <strong>1:20.00</strong>. All thresholds mean strictly below the entered time.</p>
-      <div class="goals-dialog-foot"><button id="reset-goals" type="button" class="outline-btn">↺ Restore 11-week template</button><div class="goals-save-actions"><button id="cancel-goals" type="button" class="outline-btn">Cancel</button><button type="submit" class="primary-btn">Save goals</button></div></div>
+      <p class="goal-help">Competition goals use the <strong>latest Ao5</strong>. Milestone checkpoints use the selected rolling average (Ao12 or Ao50). Enter times as <strong>8.00</strong>, <strong>30.00</strong>, or <strong>1:00.00</strong>.</p>
+      <div class="goals-dialog-foot">
+        <button id="reset-goals" type="button" class="outline-btn">↺ Restore 11-week template</button>
+        <div class="goals-save-actions">
+          <button id="cancel-goals" type="button" class="outline-btn">Cancel</button>
+          <button type="submit" class="primary-btn">Save goals</button>
+        </div>
+      </div>
     </form>
   </dialog>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Application Modules -->
+  <script src="stats.js" defer></script>
+  <script src="splits.js" defer></script>
+  <script src="coach.js" defer></script>
+  <script src="planner.js" defer></script>
+  <script src="charts.js" defer></script>
   <script src="app.js" defer></script>
 </body>
 </html>
