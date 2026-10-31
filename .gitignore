@@ -1,0 +1,6 @@
+# Never commit personal solve histories or exported backups
+cubelab-backup-*.json
+cubelab-solves-*.csv
+*Private-Import.json
+*private*.json
+*.local.json

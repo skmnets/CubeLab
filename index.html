@@ -39,7 +39,7 @@
     <main class="main">
       <header class="topbar">
         <div><span class="eyebrow">2027 COMPETITION PREP</span><h1>Training dashboard<span class="heading-period">.</span></h1><p id="subtitle">3×3 · Building consistency toward sub-8</p></div>
-        <div class="date-box"><div class="countdown" id="days-left">—</div><div class="date-description">DAYS TO<br><strong>JAN 16, 2027</strong></div></div>
+        <div class="date-box"><div class="countdown" id="days-left">—</div><div class="date-description">DAYS TO<br><strong id="competition-date-label">JAN 16, 2027</strong></div></div>
       </header>
       <section class="content-grid">
         <section class="timer-panel panel">
@@ -55,26 +55,51 @@
           </div>
           <form id="manual-form" class="manual-form">
             <label for="time-input">Solve time</label>
-            <div class="input-group"><input id="time-input" placeholder="9.66 or 1:27.30" autocomplete="off" inputmode="decimal" aria-label="Solve time" required/><button type="submit" class="primary-btn">Save solve <span>↗</span></button></div>
+            <div class="input-group"><input id="time-input" placeholder="12.34 or 1:23.45" autocomplete="off" inputmode="decimal" aria-label="Solve time" required/><button type="submit" class="primary-btn">Save solve <span>↗</span></button></div>
             <div class="manual-meta"><label>Penalty <select id="manual-penalty"><option value="none">None</option><option value="+2">+2 seconds</option><option value="DNF">DNF</option></select></label><label class="notes-label">Notes (optional)<input id="solve-note" placeholder="e.g. F2L pause, good edges" maxlength="180"/></label></div>
           </form>
           <div id="keyboard-controls" class="keyboard-controls hidden"><button id="touch-timer-btn" class="primary-btn large">Hold to start / tap to stop</button><div class="key-help">Hold <kbd>SPACE</kbd> and release to start. Press <kbd>SPACE</kbd> to stop. <kbd>ESC</kbd> cancels.<br/>The time is saved automatically after you stop.</div></div>
-          <div class="scramble-section"><div class="scramble-title"><span>Practice scramble</span><button id="new-scramble" class="text-button">↻ &nbsp;New scramble</button></div><div id="scramble-text" class="scramble-text"></div><p class="small-disclaimer">Random-move practice scrambles, not official WCA random-state scrambles. You can also use another scrambler.</p></div>
+          <div class="scramble-section"><div class="scramble-title"><span>Practice scramble</span><button id="new-scramble" class="text-button">↻ &nbsp;New scramble</button></div><div id="scramble-text" class="scramble-text"></div>
+            <div class="cube-net-box" aria-label="2D unfolded cube showing the current scramble">
+              <div class="cube-net-heading"><span>Scrambled cube · 2D net</span><span id="net-size">3×3</span></div>
+              <div class="cube-net-scroll"><div id="cube-net" class="cube-net" role="img" aria-label="Scrambled cube faces"></div></div>
+            </div>
+            <p class="small-disclaimer">Cube diagram follows the scramble exactly (white up, green front). Scrambles are random-move practice sequences, not official WCA random-state scrambles.</p></div>
         </section>
         <section class="stats-col">
           <div class="stat-pair"><article class="panel stat-card"><div class="stat-label">SESSION MEAN <span>◷</span></div><div class="stat-value" id="session-mean">—</div><div class="stat-foot" id="session-count">0 solves today</div></article><article class="panel stat-card"><div class="stat-label">BEST SINGLE <span>✦</span></div><div class="stat-value" id="best-single">—</div><div class="stat-foot">All recorded solves</div></article></div>
           <article class="panel averages-panel"><div class="panel-heading"><h2>Rolling averages</h2><span class="muted-small">Latest</span></div><div class="average-row"><span>Ao5</span><strong id="ao5">—</strong><span class="best-pill" id="best-ao5">Best —</span></div><div class="average-row"><span>Ao12</span><strong id="ao12">—</strong><span class="best-pill" id="best-ao12">Best —</span></div><div class="average-row"><span>Ao50</span><strong id="ao50">—</strong><span class="best-pill" id="best-ao50">Best —</span></div><div class="average-row"><span>Ao100</span><strong id="ao100">—</strong><span class="best-pill" id="best-ao100">Best —</span></div><p class="small-disclaimer">WCA-style trimmed averages; +2 and DNF supported.</p></article>
-          <article class="panel target-panel"><div class="target-header"><span>YOUR TARGET</span><strong id="target-label">SUB-8.00</strong></div><div class="target-current" id="current-vs-target">Add a few solves to compare your pace.</div><div class="goal-track"><div class="goal-fill" id="goal-fill"></div></div><div class="target-footer"><span id="current-label">Current mean</span><strong id="target-number">8.00s</strong></div></article>
+          <article class="panel target-panel">
+            <div class="target-header"><span>COMPETITION AVERAGE GOAL</span><div class="target-head-actions"><strong id="target-label">SUB-8.00</strong><button id="edit-goals" class="text-button goal-edit-btn" type="button">⚙ Edit goals</button></div></div>
+            <div class="target-current" id="current-vs-target">Record five solves to compare your latest Ao5.</div>
+            <div class="goal-track" role="progressbar" aria-label="Competition goal pace ratio" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="goal-track"><div class="goal-fill" id="goal-fill"></div></div>
+            <div class="target-footer"><span id="current-label">Latest Ao5 / target pace</span><strong id="target-number">8.00s</strong></div>
+            <div class="milestone-list">
+              <div class="milestone-heading">TRAINING ROADMAP <span id="goal-benchmark-name">Tracked with Ao50</span></div>
+              <div class="milestone-row"><span id="milestone-one">—</span><strong id="milestone-one-status">—</strong></div>
+              <div class="milestone-row"><span id="milestone-two">—</span><strong id="milestone-two-status">—</strong></div>
+              <div class="milestone-row stretch"><span id="stretch-goal">—</span><strong id="stretch-status">—</strong></div>
+            </div>
+          </article>
         </section>
       </section>
       <section class="bottom-grid">
         <article class="panel trend-panel"><div class="panel-heading"><div><h2>Performance trend</h2><p class="panel-subtitle">Most recent solves, ordered oldest to newest</p></div><span class="tag soft" id="chart-count">0 solves</span></div><div class="chart-wrap"><svg id="trend-chart" role="img" aria-label="Recent solve times" viewBox="0 0 600 210" preserveAspectRatio="none"></svg></div><div class="chart-legend"><span><i class="legend-dot green"></i> Solve time</span><span><i class="legend-dot gray"></i> Target</span></div></article>
         <article class="panel history-panel"><div class="panel-heading"><div><h2>Solve history</h2><p class="panel-subtitle">Newest first · click penalty to change</p></div><button id="clear-event" class="text-button muted-red">Clear</button></div><div class="history-table-wrap"><table><thead><tr><th>#</th><th>Time</th><th>Penalty</th><th>Method</th><th></th></tr></thead><tbody id="history-body"></tbody></table></div><div class="table-footer" id="history-count">0 recorded solves</div></article>
       </section>
-      <section class="panel data-panel"><div><h2>Your data, your control</h2><p>Export JSON for full backups or CSV for analysis in ChatGPT. Imports merge by solve ID. No account or API key needed.</p><p class="small-disclaimer">GPT analysis is not connected automatically in this version; upload an exported file in ChatGPT.</p></div><div class="data-actions"><button id="export-csv" class="outline-btn">↓ Export CSV</button><button id="export-json" class="outline-btn">↓ Backup JSON</button><label class="outline-btn import-label">↑ Import JSON<input id="import-file" type="file" accept="application/json,.json" hidden/></label><button id="load-baseline" class="outline-btn subtle-btn" title="Add the Day 1 times shared in our chat">Load Day 1 times</button></div></section>
-      <footer>CubeLab v1.0 · Unofficial practice timer · All timings and averages are for training, not WCA certification.</footer>
+      <section class="panel data-panel"><div><h2>Your data, your control</h2><p>Export JSON backups (including your custom goals) or CSV solves for analysis in ChatGPT. Imports merge by solve ID. No account or API key needed.</p><p class="small-disclaimer">GPT analysis is not connected automatically in this version; upload an exported file in ChatGPT.</p></div><div class="data-actions"><button id="export-csv" class="outline-btn">↓ Export CSV</button><button id="export-json" class="outline-btn">↓ Backup JSON</button><label class="outline-btn import-label">↑ Import JSON<input id="import-file" type="file" accept="application/json,.json" hidden/></label></div></section>
+      <footer>CubeLab v3.0 · Unofficial practice timer · All timings and averages are for training, not WCA certification.</footer>
     </main>
   </div>
+  <dialog id="goals-dialog" class="goals-dialog" aria-labelledby="goals-title">
+    <form id="goals-form">
+      <div class="goals-dialog-head"><div><div class="eyebrow">TRAINING TARGETS</div><h2 id="goals-title">Customize your goals</h2><p>Use a starter template or edit every target. Saved only in this browser, alongside your solves.</p></div><button type="button" id="close-goals" class="dialog-close" aria-label="Close goal editor">×</button></div>
+      <div class="competition-setting"><label for="competition-date">Competition date</label><input id="competition-date" type="date" required /><span>Updates the dashboard countdown.</span></div>
+      <div id="goal-editor-grid" class="goal-editor-grid"></div>
+      <p class="goal-help">Competition and stretch goals use the <strong>latest Ao5</strong> (WCA-style trimmed average). Training milestones use the selected rolling-average metric for each event. Times accept <strong>9.30</strong>, <strong>35.50</strong>, or <strong>1:20.00</strong>. All thresholds mean strictly below the entered time.</p>
+      <div class="goals-dialog-foot"><button id="reset-goals" type="button" class="outline-btn">↺ Restore 11-week template</button><div class="goals-save-actions"><button id="cancel-goals" type="button" class="outline-btn">Cancel</button><button type="submit" class="primary-btn">Save goals</button></div></div>
+    </form>
+  </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="app.js" defer></script>
 </body>
