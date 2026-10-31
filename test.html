@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CubeLab v4 Automated Test Suite</title>
+  <style>
+    body { font-family: monospace; background: #0b1120; color: #f1f4fa; padding: 25px; line-height: 1.6; }
+    h1 { color: #3bc9aa; font-size: 20px; }
+    .suite { margin-bottom: 20px; border: 1px solid #23354d; border-radius: 8px; padding: 15px; background: #111c2e; }
+    .suite-title { font-weight: bold; font-size: 14px; margin-bottom: 10px; color: #6792ff; }
+    .test { margin: 6px 0; padding: 4px 8px; border-radius: 4px; }
+    .pass { background: #13382c; color: #58e2ba; }
+    .fail { background: #4a1c24; color: #ff8c94; font-weight: bold; }
+    .summary { font-size: 16px; margin-top: 20px; font-weight: bold; padding: 12px; border-radius: 6px; }
+    .summary.all-pass { background: #153c31; color: #3bc9aa; border: 1px solid #3bc9aa; }
+  </style>
+</head>
+<body>
+  <h1>CubeLab v4 — Automated Unit Test Suite</h1>
+  <div id="results">Running tests...</div>
+
+  <script src="stats.js"></script>
+  <script src="splits.js"></script>
+  <script src="coach.js"></script>
+  <script src="planner.js"></script>
+  <script>
+    const results = document.getElementById('results');
+    let totalTests = 0;
+    let passedTests = 0;
+    let currentSuiteDiv = null;
+
+    function suite(name) {
+      currentSuiteDiv = document.createElement('div');
+      currentSuiteDiv.className = 'suite';
+      const title = document.createElement('div');
+      title.className = 'suite-title';
+      title.textContent = name;
+      currentSuiteDiv.appendChild(title);
+      results.appendChild(currentSuiteDiv);
+    }
+
+    function test(name, fn) {
+      totalTests++;
+      const div = document.createElement('div');
+      div.className = 'test';
+      try {
+        fn();
+        passedTests++;
+        div.className += ' pass';
+        div.textContent = `✓ PASS: ${name}`;
+      } catch (err) {
+        div.className += ' fail';
+        div.textContent = `✗ FAIL: ${name} — ${err.message}`;
+        console.error(err);
+      }
+      currentSuiteDiv.appendChild(div);
+    }
+
+    function assert(cond, msg) {
+      if (!cond) throw new Error(msg || 'Assertion failed');
+    }
+    function assertEqual(actual, expected, msg) {
+      if (actual !== expected) throw new Error(`${msg ? msg + ' ' : ''}Expected ${expected}, but got ${actual}`);
+    }
+    function assertClose(actual, expected, tol = 0.01, msg) {
+      if (Math.abs(actual - expected) > tol) throw new Error(`${msg ? msg + ' ' : ''}Expected ${expected} (±${tol}), but got ${actual}`);
+    }
+
+    // Clear loading placeholder
+    results.innerHTML = '';
+
+    // Suite 1: WCA Average Calculations
+    suite('1. WCA Trimmed Averages (Ao5, Ao12, Ao50)');
+    test('Ao5 drops fastest and slowest', () => {
+      // 5 solves: 8.00, 9.00, 10.00, 11.00, 12.00 -> kept: 9.00, 10.00, 11.00 -> mean = 10.00 (1000cs)
+      const solves = [
+        { baseCs: 800, penalty: 'none' },
+        { baseCs: 1200, penalty: 'none' },
+        { baseCs: 900, penalty: 'none' },
+        { baseCs: 1100, penalty: 'none' },
+        { baseCs: 1000, penalty: 'none' }
+      ];
+      const avg = CubeStats.trimmedAverage(solves);
+      assertEqual(avg, 1000, 'Ao5 middle 3 mean');
+    });
+
+    test('Ao5 handles single DNF correctly by trimming it as slowest', () => {
+      // Solves: 8.00, 9.00, 10.00, 11.00, DNF -> drops 8.00 and DNF -> kept: 9.00, 10.00, 11.00 -> 10.00
+      const solves = [
+        { baseCs: 800, penalty: 'none' },
+        { baseCs: 900, penalty: 'none' },
+        { baseCs: 1000, penalty: 'none' },
+        { baseCs: 1100, penalty: 'none' },
+        { baseCs: 1500, penalty: 'DNF' }
+      ];
+      const avg = CubeStats.trimmedAverage(solves);
+      assertEqual(avg, 1000, 'Ao5 with single DNF should be valid');
+    });
+
+    test('Ao5 returns Infinity (DNF) when two or more DNFs occur', () => {
+      const solves = [
+        { baseCs: 800, penalty: 'none' },
+        { baseCs: 900, penalty: 'none' },
+        { baseCs: 1000, penalty: 'none' },
+        { baseCs: 1100, penalty: 'DNF' },
+        { baseCs: 1200, penalty: 'DNF' }
+      ];
+      const avg = CubeStats.trimmedAverage(solves);
+      assertEqual(avg, Infinity, 'Ao5 with two DNFs is DNF');
+    });
+
+    test('Ao5 handles +2 penalty (+200cs) before trimming', () => {
+      // Solves: 7.00, 8.00 (+2 -> 10.00), 9.00, 11.00, 12.00
+      // Effective: 700, 900, 1000, 1100, 1200 -> drops 700 and 1200 -> mean of 900, 1000, 1100 = 1000
+      const solves = [
+        { baseCs: 700, penalty: 'none' },
+        { baseCs: 800, penalty: '+2' },
+        { baseCs: 900, penalty: 'none' },
+        { baseCs: 1100, penalty: 'none' },
+        { baseCs: 1200, penalty: 'none' }
+      ];
+      const avg = CubeStats.trimmedAverage(solves);
+      assertEqual(avg, 1000, 'Ao5 with +2 penalty');
+    });
+
+    test('Ao50 trims top 3 and bottom 3 (ceil 50*0.05 = 3)', () => {
+      const solves = [];
+      for (let i = 1; i <= 50; i++) {
+        solves.push({ baseCs: i * 100, penalty: 'none' }); // 1.00s to 50.00s
+      }
+      // Trim lowest 3 (1, 2, 3) and highest 3 (48, 49, 50). Kept: 4 through 47 (44 solves)
+      // Mean of 4..47 = (4 + 47) / 2 = 25.5s = 2550cs
+      const avg = CubeStats.trimmedAverage(solves);
+      assertEqual(avg, 2550, 'Ao50 5% trim');
+    });
+
+    // Suite 2: Descriptive Statistics
+    suite('2. Descriptive Statistics (Mean, Median, Sample StdDev, CV)');
+    test('Calculates mean, sample std dev, and CV accurately', () => {
+      const solves = [
+        { baseCs: 1000, penalty: 'none' },
+        { baseCs: 1200, penalty: 'none' },
+        { baseCs: 1400, penalty: 'none' },
+        { baseCs: 1600, penalty: 'none' },
+        { baseCs: 1800, penalty: 'none' }
+      ];
+      const s = CubeStats.descriptiveStats(solves);
+      assertEqual(s.mean, 1400, 'Mean');
+      assertEqual(s.median, 1400, 'Median');
+      assertClose(s.stdDev, 316.2, 0.5, 'Sample StdDev');
+      assertClose(s.cv, 22.6, 0.5, 'Coefficient of Variation');
+      assertEqual(s.min, 1000, 'Min');
+      assertEqual(s.max, 1800, 'Max');
+    });
+
+    // Suite 3: Inferential Statistics & Welch t-test
+    suite('3. Comparative Analytics & Welch t-test');
+    test('Detects statistically significant improvement between subsets', () => {
+      const setA = []; // baseline: ~15s
+      const setB = []; // improved: ~10s
+      for (let i = 0; i < 30; i++) {
+        setA.push({ baseCs: 1500 + (i % 5) * 20, penalty: 'none' });
+        setB.push({ baseCs: 1000 + (i % 5) * 20, penalty: 'none' });
+      }
+      const cmp = CubeStats.compareSubsets(setA, setB);
+      assert(cmp.sufficientData, 'Sufficient data');
+      assert(cmp.isSignificant, 'Should be statistically significant');
+      assertEqual(cmp.diff, -500, 'Mean difference');
+      assert(cmp.pValue < 0.001, 'p-value should be < 0.001');
+    });
+
+    test('Reports non-significant when differences are within random variance', () => {
+      const setA = [];
+      const setB = [];
+      for (let i = 0; i < 20; i++) {
+        setA.push({ baseCs: 1200 + (i % 7) * 30, penalty: 'none' });
+        setB.push({ baseCs: 1205 + (i % 7) * 30, penalty: 'none' });
+      }
+      const cmp = CubeStats.compareSubsets(setA, setB);
+      assert(!cmp.isSignificant, 'Should NOT be statistically significant');
+      assert(cmp.pValue > 0.05, 'p-value should be > 0.05');
+    });
+
+    // Suite 4: Stage Splits Validation
+    suite('4. Stage Splits Engine');
+    test('Validates split sum matching total solve time', () => {
+      const stages = [
+        { name: 'Cross', cs: 150 },
+        { name: 'F2L', cs: 500 },
+        { name: 'Last Layer', cs: 350 }
+      ];
+      const valid = CubeSplits.validateSplits(stages, 1000);
+      assert(valid.valid, 'Split sum 1000 matches 1000');
+    });
+
+    test('Rejects splits where sum does not equal total solve time', () => {
+      const stages = [
+        { name: 'Cross', cs: 150 },
+        { name: 'F2L', cs: 400 },
+        { name: 'Last Layer', cs: 350 }
+      ]; // Sum = 900 != 1000
+      const invalid = CubeSplits.validateSplits(stages, 1000);
+      assert(!invalid.valid, 'Should reject mismatched split sum');
+    });
+
+    test('Identifies dominant bottleneck when stage exceeds benchmark', () => {
+      const solves = [
+        {
+          baseCs: 1000,
+          penalty: 'none',
+          splits: [{ name: 'Cross', cs: 100 }, { name: 'F2L', cs: 650 }, { name: 'Last Layer', cs: 250 }] // F2L is 65% vs 50% benchmark
+        },
+        {
+          baseCs: 1000,
+          penalty: 'none',
+          splits: [{ name: 'Cross', cs: 100 }, { name: 'F2L', cs: 630 }, { name: 'Last Layer', cs: 270 }]
+        }
+      ];
+      const analysis = CubeSplits.analyzeSplits(solves, '3x3');
+      assert(analysis.hasData, 'Has data');
+      assert(analysis.dominantBottleneck !== null, 'Has dominant bottleneck');
+      assertEqual(analysis.dominantBottleneck.name, 'F2L', 'Bottleneck is F2L');
+    });
+
+    // Suite 5: Coaching & Planner Engine
+    suite('5. Coaching Engine & Daily Planner');
+    test('Generates high variability recommendation when CV exceeds 18%', () => {
+      const highVarSolves = [];
+      for (let i = 0; i < 25; i++) {
+        highVarSolves.push({ baseCs: i % 2 === 0 ? 800 : 1500, penalty: 'none', createdAt: new Date().toISOString() });
+      }
+      const recs = CubeCoach.generateRecommendations(highVarSolves, '3x3', { competitionCs: 800 });
+      assert(recs.some(r => r.id === 'high_variability'), 'Triggers high_variability recommendation');
+    });
+
+    test('Daily planner allocates exactly 120 minutes with bounded bounds', () => {
+      const dummySolves = [
+        { event: '3x3', baseCs: 900, penalty: 'none', createdAt: new Date().toISOString() },
+        { event: '4x4', baseCs: 3500, penalty: 'none', createdAt: new Date().toISOString() },
+        { event: '5x5', baseCs: 7000, penalty: 'none', createdAt: new Date().toISOString() }
+      ];
+      const plan = CubePlanner.suggestSchedule(dummySolves, null, null, 120);
+      const sum = plan.allocations['3x3'].minutes +
+                  plan.allocations['4x4'].minutes +
+                  plan.allocations['5x5'].minutes +
+                  plan.allocations['review'].minutes;
+      assertEqual(sum, 120, 'Total minutes must equal 120');
+      assert(plan.allocations['3x3'].minutes >= 20, '3x3 >= 20m');
+      assert(plan.allocations['4x4'].minutes >= 20, '4x4 >= 20m');
+      assert(plan.allocations['5x5'].minutes >= 20, '5x5 >= 20m');
+    });
+
+    // Final summary
+    const summary = document.createElement('div');
+    summary.className = 'summary' + (passedTests === totalTests ? ' all-pass' : '');
+    summary.textContent = `Completed ${totalTests} unit tests: ${passedTests} passed, ${totalTests - passedTests} failed.`;
+    results.appendChild(summary);
+  </script>
+</body>
+</html>

@@ -1,87 +1,110 @@
-# CubeLab v3 — GitHub Pages speedcubing timer + custom targets
+# CubeLab v4 — Intelligent Speedcubing Analytics & Personalized Training
 
-A privacy-first, zero-dependency speedcubing practice timer and statistics dashboard. Designed for 3×3, 4×4, and 5×5 training before Zephyr Cube Bash 2027.
+A privacy-first, zero-dependency, statistically rigorous speedcubing analytics, coaching, and training platform. Designed for 3×3, 4×4, and 5×5 training leading into Zephyr Cube Bash 2027.
 
-## Features
+Operates 100% in the user's browser with zero live AI calls, zero external databases, zero tracking, and $0 monthly infrastructure cost.
 
-- **Manual entry:** solve with your QiYi physical timer, then input a time such as `12.34`, `34.56`, or `1:23.45`. Press Enter or click **Save solve**.
-- **Keyboard timing:** choose **Keyboard timer**, hold Space, release to start; press Space to stop and save. Escape cancels. A hold/tap button also works on touch devices.
-- **Independent events:** 3×3, 4×4, and 5×5 each have separate solve histories.
-- **Statistics:** mean of today's valid solves, best single, latest Ao5/Ao12/Ao50/Ao100, best rolling averages, and a performance trend chart.
-- **Custom goals:** click **⚙ Edit goals** to customize each event’s competition Ao5 threshold, two milestone targets/dates, stretch threshold, and training consistency metric (latest Ao5/Ao12/Ao50). Customize the competition date and countdown.
-- **Recommended template:** Nov 15 / Dec 15 / Jan 16 checkpoints are already populated; click **Restore 11-week template** in the editor to start from them.
-- **Penalties:** choose +2 or DNF when entering a manual time; cycle a saved solve's penalty by clicking its penalty button.
-- **Scrambles + cube diagram:** automatically generated random-move scrambles for 3×3 (20 moves), 4×4 (44 moves), and 5×5 (60 moves). Click **New scramble** whenever you want. A fully simulated **2D unfolded cube net** shows the exact result of each scramble, including 4×4 and 5×5 wide moves. White is U, green is F. Both the notation and diagram advance after recording a solve. **These are not official WCA random-state scrambles**; use official competition scrambles when reproducing WCA conditions.
-- **Data storage:** local browser storage; no account or external service.
-- **Data portability:** full JSON backup and import (includes your custom goals); CSV solve export for analysis by ChatGPT/Excel.
+**Live Website:** [https://skmnets.github.io/CubeLab/](https://skmnets.github.io/CubeLab/)
 
-## Suggested starting goal template
+---
 
-| Event | Checkpoint 1 (Nov 15, 2026) | Checkpoint 2 (Dec 15, 2026) | Competition (Jan 16, 2027) | Stretch | Training benchmark |
-|---|---:|---:|---:|---:|---|
-| 3×3 | Sub-9.30 | Sub-8.50 | Sub-8.00 | Sub-7.50 | Latest Ao50 |
-| 4×4 | Sub-35.50 | Sub-32.00 | Sub-30.00 | Sub-28.00 | Latest Ao12 |
-| 5×5 | Sub-1:20.00 | Sub-1:10.00 | Sub-1:00.00 | Sub-55.00 | Latest Ao12 |
+## What's new in v4
 
-Targets are illustrative training checkpoints and can be changed at any time. A **competition target** is considered achieved when the most recent WCA-style Ao5 is **strictly below** the entered time (e.g. 7.99 beats sub-8.00; 8.00 does not). Milestone targets use the event’s chosen rolling Ao5/Ao12/Ao50. A checkpoint without sufficient recorded solves will say how many solves are needed.
+CubeLab has evolved from a clean speedcubing timer into a full personal training and analytics studio:
 
-Goals are stored in a separate browser `localStorage` key (`cubelab-goals-v2`). Existing solves remain in the unchanged `cubelab-solves-v1` key, so updating the published site **does not reset your previous solve history** on the same URL/browser profile. Uploading new site files to GitHub does not publish local data.
+1. **Deep Performance Analytics:**
+   - Descriptive statistics: sample mean, median, sample standard deviation ($s$), coefficient of variation ($CV$), interquartile range ($IQR$), DNF%, +2 frequency, and percentiles ($P_{10}, P_{25}, P_{50}, P_{75}, P_{90}$).
+   - WCA-style trimmed average algorithm (Ao5, Ao12, Ao50, Ao100) with robust single and multi-DNF handling.
+   - Interactive, responsive, dependency-free SVG progression curves and solve-time distribution histograms.
+   - **Comparative Analytics & Welch's Two-Sample t-test:** Statistically tests whether differences between sessions (e.g. Last 25 vs Prior 25, First 50 vs Last 50, This Week vs Last Week) are statistically significant ($\alpha = 0.05$) or within normal random variance.
 
-## Run locally
+2. **Intelligent Goal Tracking & Forecast Modeling:**
+   - Linear regression trendlines over chronological rolling averages.
+   - Computes current weekly improvement rate vs required rate to reach competition targets by January 16, 2027.
+   - Projects goal attainment dates with 95% standard-error confidence intervals ($R^2$ and residual standard error).
+   - Safeguards against overconfidence on small samples ($N < 15$) or flat/regressing trajectories.
 
-Open `index.html` in a modern web browser. For a local server, in this folder run:
+3. **Stage-Specific Performance Splits:**
+   - **3×3 CFOP:** Cross, F2L, Last Layer (LL).
+   - **4×4 Yau:** First 2 Centers (F2C), First 3 Edges (F3E), Last 4 Centers (L4C), Edge Pairing (3-2-3), 3×3 Stage.
+   - **5×5 Yau:** Centers, Cross Edges, Edge Pairing, 3×3 Stage.
+   - Validates that stage splits sum to total solve time ($\pm 2$ cs margin).
+   - Identifies dominant bottlenecks where a stage exceeds expected WCA speedcubing percentage benchmarks.
+
+4. **Explainable CubeLab Coach:**
+   - Fully deterministic, transparent rule engine—not a generic LLM wrapper or black-box chatbot.
+   - Every recommendation provides:
+     - **Observed Pattern:** (e.g., High solve variability, elevated penalties, F2L bottleneck).
+     - **Supporting Evidence:** Exact measured metric ($CV$, $s$, IQR, DNF rate, or stage excess %).
+     - **Interpretation:** Why this pattern occurs (e.g., lookahead breakdown vs turning speed).
+     - **Recommended Action:** Concrete practice drills to address the root cause.
+     - **Intended Outcome:** Measurable target goal.
+     - **Confidence Rating:** Explicit indication of statistical sample strength.
+
+5. **Automated Local Weekly Review:**
+   - Generates a local weekly performance narrative comparing the past 7 days against the prior 7 days.
+   - Reports practice volume, mean delta, Welch t-test significance, new personal bests (singles and Ao5s), and upcoming priorities.
+
+6. **Personalized 2-Hour Daily Training Planner:**
+   - Baseline allocation: 3×3 CFOP (35m), 4×4 Yau (35m), 5×5 Yau (45m), Session Review (5m).
+   - **Dynamic Rebalance Engine:** Reallocates daily training minutes based on relative distance to competition targets, solve consistency, and stage-split bottlenecks.
+   - Curated Speedcubing Drill Library with timed instructions (inspection cross planning, slow-turn lookahead, rotationless F2L, 3-2-3 edge pairing flow, center bar building).
+
+7. **Zero-Dependency Architecture & Complete Privacy:**
+   - All data stays inside your browser (`localStorage`).
+   - Versioned JSON export/import (v4 includes solves, goals, daily training plans, and stage configurations).
+   - Backward-compatible with older CubeLab v1, v2, and v3 backups.
+
+---
+
+## Statistical Methodology
+
+### WCA Trimmed Averages
+- **Ao5:** Drops fastest and slowest solve, arithmetic mean of middle 3. Single DNF is trimmed as the slowest solve; $\ge 2$ DNFs results in a DNF average.
+- **Ao12:** Drops fastest and slowest solve (8.3% trim on each end), arithmetic mean of middle 10.
+- **Ao50 / Ao100:** Drops top $k$ and bottom $k$ solves where $k = \lceil N \times 0.05 \rceil$. For Ao50, $k = 3$ (averages middle 44). For Ao100, $k = 5$ (averages middle 90).
+
+### Sample Dispersion & Variability
+- **Sample Standard Deviation ($s$):** Computed using Bessel's correction with $N - 1$ degrees of freedom:
+  $$s = \sqrt{\frac{1}{N - 1} \sum_{i=1}^N (x_i - \bar{x})^2}$$
+- **Coefficient of Variation ($CV$):** Standard deviation relative to sample mean expressed as a percentage:
+  $$CV = \frac{s}{\bar{x}} \times 100\%$$
+  A $CV > 18\%$ indicates high variability and inconsistent lookahead.
+
+### Inferential Comparative Analytics (Welch's t-test)
+When comparing two practice samples $A$ and $B$, CubeLab employs Welch's unequal variances $t$-test:
+$$t = \frac{|\bar{x}_B - \bar{x}_A|}{\sqrt{\frac{s_A^2}{n_A} + \frac{s_B^2}{n_B}}}$$
+Degrees of freedom ($df$) are calculated via the Welch–Satterthwaite equation, and two-tailed $p$-values are evaluated via the regularized incomplete beta function. Differences are only characterized as statistically significant when $p < 0.05$.
+
+---
+
+## Automated Testing
+
+CubeLab v4 includes an automated unit test suite verifying all statistical algorithms, trimming rules, stage validation, and coaching heuristics:
+
+- **Browser Test Suite:** Open `test.html` in any browser to execute the complete unit test suite.
+- **Terminal Verification:** Run `python run_tests.py` to verify the mathematical calculations.
+
+```sh
+python run_tests.py
+```
+
+---
+
+## Running Locally
+
+To run CubeLab locally:
 
 ```sh
 python -m http.server 8000
 ```
+Then navigate to `http://localhost:8000` in your web browser.
 
-Then open `http://localhost:8000`.
+---
 
-## Publish for free with GitHub Pages
+## Deployment via GitHub Pages
 
-1. Create a new GitHub repository, e.g. `cubelab`.
-2. Upload **index.html**, **styles.css**, and **app.js** to the repository root (README.md is optional).
-3. In the repository's **Settings → Pages**, choose **Deploy from a branch**, select `main` and `/ (root)`, then save.
-4. GitHub will provide a website URL like `https://YOUR_USERNAME.github.io/cubelab/` once deployment completes.
-
-No API keys, package installs, build step, or hosting fees are needed for this static frontend.
-
-## Import your private Day 1 times
-
-The public website does **not** bundle any personal solve history. If you have a private
-CubeLab Day 1 JSON import file, keep it **outside this repository** on your own device.
-After deploying, use **Import JSON** in CubeLab to load that file locally in your browser.
-**Never commit exported CSV/JSON solve history to a public GitHub repository.**
-
-## Security and data limitations
-
-- **Public repository contents are public.** The app contains no personal solve records in its source code.
-- Stored data is **per browser and device**, not synced across devices. Export JSON backups frequently. Clearing browser data can erase solves.
-- The app does **not currently connect to the QiYi timer hardware**; use manual entry or the keyboard timer.
-- The app does **not directly connect to ChatGPT**. Export CSV/JSON and upload the file in chat for coaching and longitudinal analysis.
-- Do **not** add an OpenAI API key to these static files or commit it to GitHub. Adding an AI backend later requires a server-side endpoint and suitable authentication/storage.
-- Keyboard/browser timing and random-move scrambles are for practice, not official WCA timekeeping.
-
-## Import and export
-
-The **Backup JSON** output is a portable, versioned structure: `{ "app": "CubeLab", "version": 3, "goals": {...}, "solves": [...] }`. Imported solves are merged by unique IDs; if an import also contains goals, CubeLab asks before overwriting the current goal settings. Older v1 solve backups still import. CSV export includes `event`, `date`, `timestamp`, `time_seconds`, `base_time_seconds`, `penalty`, `result`, `source`, `notes`, and `scramble`.
-
-## Updating from CubeLab v1 or v2
-
-Replace `index.html`, `styles.css` and `app.js` in your existing GitHub Pages repository with the v2 files and publish. The local solve storage key is unchanged, and no solve history is bundled in this public-safe project. Your private Day 1 file can still be imported in the browser. Keep your JSON/CSV backups off the public repo.
-
-## Near-term upgrades
-
-Possible additions: inspection +15/+17 penalty timing, stage splits, session tags, keyboard rebindings, official WCA-quality scramble generation using a dedicated scrambling library, online sync, hardware integration, and an MCP/API service for direct ChatGPT access.
-
-## Two-dimensional net verification
-
-The scrambler and 2D diagram are in `app.js`. The net is computed from a sticker-level 3D cube simulation; it is not an unrelated image. Each supported turn and wide turn updates the sticker positions and orientations. Colors: U white, D yellow, F green, B blue, R red, L orange. The six faces are laid out as:
-
-```text
-      U
-  L   F   R   B
-      D
-```
-
-All scramble data remains stored locally with each recorded solve as before. No image API, account, network request, or external library is required. This version was checked with automated move/inverse and browser interaction tests for all three cube sizes.
+CubeLab runs as a zero-dependency static application directly on GitHub Pages:
+1. Push updates to the `main` branch.
+2. In GitHub repository **Settings → Pages**, ensure Source is set to **Deploy from a branch (`main` / root)**.
+3. The live site automatically builds at `https://YOUR_USERNAME.github.io/CubeLab/`.
